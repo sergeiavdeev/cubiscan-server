@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.json.JSONObject;
+
 public class RequestThread extends Thread {
 
 	private BufferedReader input;
@@ -27,8 +29,22 @@ public class RequestThread extends Thread {
 	
 		super.run();
 		
-		output.println("Hi!");
+		JSONObject j = new JSONObject();
+		j.put("id", 1589);
+		j.put("name", "Москва!");
+		j.put("descr", "Столица России!");
 		
+		String response = j.toString();
+		
+		output.println("HTTP/1.1 200 OK");
+		output.println("Server: nginx/1.2.1");
+		output.println("Content-Type: application/json; charset=utf-8");
+		output.println("Content-Length: " + (response.getBytes().length));
+		output.println("Connection: keep-alive");
+		output.println("Accept-Ranges: bytes");
+		output.println("");
+		output.println(response);
+								
 		try {						
 			input.close();
 			output.close();
