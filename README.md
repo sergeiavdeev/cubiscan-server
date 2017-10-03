@@ -1,2 +1,2 @@
 # cubiscan-server
-Cubiscan Server
+Cubiscan Server (Java)
