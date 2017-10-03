@@ -6,12 +6,15 @@ import java.net.Socket;
 public class Cubiscan {
 
 	private ServerSocket socket;
-	
-	public Cubiscan() {
+	private String ip;
+		
+	public Cubiscan(String ip, int port) {
 		// TODO Auto-generated constructor stub
 		
+		this.ip = ip;
+				
 		try {
-			socket = new ServerSocket(8080);
+			socket = new ServerSocket(port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
