@@ -39,11 +39,11 @@ public class RequestThread extends Thread {
 		output.println("HTTP/1.1 200 OK");
 		output.println("Server: nginx/1.2.1");
 		output.println("Content-Type: application/json; charset=utf-8");
-		output.println("Content-Length: " + (response.getBytes().length));
+		output.println("Content-Length: " + response.getBytes().length);
 		output.println("Connection: keep-alive");
 		output.println("Accept-Ranges: bytes");
 		output.println("");
-		output.println(response);
+		output.println(response.toString());
 								
 		try {						
 			input.close();
