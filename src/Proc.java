@@ -2,7 +2,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
 import avdeev.cubiscan.Cubiscan;
 
 public class Proc {
@@ -25,10 +24,11 @@ public class Proc {
 			return;
 		}
 		
-		int port = Integer.parseInt(props.getProperty("port"));
-		String ip = props.getProperty("ip");
-		
-		Cubiscan cubiscan = new Cubiscan(ip, port);
+		int port = Integer.parseInt(props.getProperty("cubiscan.port"));
+		String ip = props.getProperty("cubiscan.ip");
+		int serverPort = Integer.parseInt(props.getProperty("server.port"));
+				
+		Cubiscan cubiscan = new Cubiscan(serverPort, ip, port);		
 		cubiscan.start();
 	}
 }

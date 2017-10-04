@@ -6,23 +6,23 @@ import java.net.Socket;
 public class Cubiscan {
 
 	private ServerSocket socket;
-	private String ip;
+	private String cubIp;
+	private int cubPort;
+	
 		
-	public Cubiscan(String ip, int port) {
-		// TODO Auto-generated constructor stub
-		
-		this.ip = ip;
+	public Cubiscan(int serverPort, String cubIp, int cubPort) {
+				
+		this.cubIp = cubIp;
+		this.cubPort = cubPort;		
 				
 		try {
-			socket = new ServerSocket(port);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Cold not create socket!");
-			System.exit(-1);
-			return;
+			socket = new ServerSocket(serverPort);
+		} catch (IOException e) {			
+			e.printStackTrace();			
+			System.exit(-1);			
 		}	    
-	}
+	}	
+	
 	
 	public void start() {
 		
@@ -35,18 +35,12 @@ public class Cubiscan {
 			try {				
 				client = socket.accept();
 				
-				System.out.println("Client connected!");
-				System.out.println(client.getInetAddress());
-				
-				RequestThread req = new RequestThread(client);
+				ResponseThread req = new ResponseThread(client, cubIp, cubPort);
 				req.start();												
 				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("No accept!");
-				System.exit(-1);
-				return;
+			} catch (IOException e) {				
+				e.printStackTrace();				
+				System.exit(-1);				
 			}
 		}
 	}
