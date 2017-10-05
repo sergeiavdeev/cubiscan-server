@@ -34,7 +34,7 @@ import java.util.Map.Entry;
  * @author JSON.org
  * @version 2016-08-10
  */
-@SuppressWarnings("boxing")
+//@SuppressWarnings("boxing")
 public class XML {
     /** The Character '&amp;'. */
     public static final Character AMP = '&';

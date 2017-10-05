@@ -12,17 +12,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONObject;
+
 
 public class ResponseThread extends Thread {
 
+	private float length;
+	private float width;
+	private float height;
+	private float weight;
+	private float dimWeight;
+	private float volWeight;
+	
 	private BufferedReader input;
 	private PrintWriter output;
 	
 	private BufferedReader cubInput;
 	private PrintWriter cubOutput;
 	
-	private Socket client;
-	private Cargo cargo;
+	private Socket client;	
 	private Socket cubSocket;
 	private char [] command;
 	private List<String> errors;
@@ -30,7 +38,14 @@ public class ResponseThread extends Thread {
 	public ResponseThread(Socket s, String cubIp, int cubPort) {
 		
 		client = s;
-		cargo = new Cargo();
+		
+		length = 0;
+		width  = 0;
+		height = 0;
+		weight = 0;
+		
+		dimWeight = 0;
+		volWeight = 0;
 		
 		errors = new ArrayList<String>();
 		
@@ -45,6 +60,7 @@ public class ResponseThread extends Thread {
 		} catch (IOException e) {
 			
 			errors.add(e.getMessage());
+			errors.add("Ошибка соединения с cubiscan!");
 			e.printStackTrace();
 		}				
 	}
@@ -56,8 +72,7 @@ public class ResponseThread extends Thread {
 		super.run();
 		
 		if (errors.size() == 0) {
-					
-			cargo.setProps(0, 0, 0, 0, 0, 0);
+			
 			cubOutput.write(command);
 			cubOutput.flush();
 			
@@ -72,14 +87,15 @@ public class ResponseThread extends Thread {
 				
 				byte [] result = userInput.getBytes();
 				if (result[2] == 0x41) { //Измерили
-					cargo.setProps(
-							Float.parseFloat(userInput.substring(12, 17)), 
-							Float.parseFloat(userInput.substring(19, 24)), 
-							Float.parseFloat(userInput.substring(26, 31)), 
-							Float.parseFloat(userInput.substring(35, 41)), 
-							Float.parseFloat(userInput.substring(43, 49)), 
-							Float.parseFloat(userInput.substring(43, 49))
-							);				
+					
+					length = getFloat(userInput.substring(12, 17)); 
+					width =  getFloat(userInput.substring(19, 24)); 
+					height = getFloat(userInput.substring(26, 31)); 
+					weight = getFloat(userInput.substring(35, 41)); 
+					
+					dimWeight = getFloat(userInput.substring(43, 49)); 
+					volWeight = getFloat(userInput.substring(43, 49));
+									
 				}
 				else {				
 					errors.add("Ошибка измерения");
@@ -88,10 +104,30 @@ public class ResponseThread extends Thread {
 			} catch (IOException e) {				
 				errors.add(e.getMessage());	
 				e.printStackTrace();						
-			}
+			}			
 		}
-				
-		String response = cargo.getJSON(errors);
+		
+		JSONObject result = new JSONObject();		
+		
+		boolean isError = false;
+		
+		if(errors.size() > 0) {
+			isError = true;
+		}
+		
+		JSONObject data = new JSONObject();
+		data.put("length", length);
+		data.put("width", width);
+		data.put("height", height);
+		data.put("weight", weight);
+		data.put("dimWeight", dimWeight);
+		data.put("volWeight", volWeight);
+		
+		result.put("isError", isError);
+		result.put("errors", errors);
+		result.put("data", data);
+		
+		String response = result.toString();
 		
 		output.println("HTTP/1.1 200 OK");
 		output.println("Server: Cubiscan Server 1.0");
@@ -103,11 +139,25 @@ public class ResponseThread extends Thread {
 		output.println(response);
 								
 		try {						
-			input.close();
-			output.close();
-			client.close();
+			if(input != null)input.close();
+			if(output != null)output.close();
+			if(client != null)client.close();
 		} catch (IOException e) {			
 			e.printStackTrace();			
 		}			
-	}			
+	}		
+	
+	private float getFloat(String value) {
+		
+		float result = 0f;
+		
+		try {
+			result = Float.parseFloat(value);
+		} catch (NumberFormatException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 }

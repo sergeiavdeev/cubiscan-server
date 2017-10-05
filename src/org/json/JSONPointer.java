@@ -207,7 +207,7 @@ public class JSONPointer {
      * @return the matched object. If no matching item is found a
      * JSONPointerException is thrown
      */
-    @SuppressWarnings("boxing")
+    //@SuppressWarnings("boxing")
     private Object readByIndexToken(Object current, String indexToken) {
         try {
             int index = Integer.parseInt(indexToken);
