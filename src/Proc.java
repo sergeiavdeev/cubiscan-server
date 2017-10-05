@@ -7,19 +7,17 @@ import avdeev.cubiscan.Cubiscan;
 public class Proc {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		Properties props = new Properties();
 		FileInputStream propsFile;
 						
-		try {
+		try {			
 			propsFile = new FileInputStream("config.ini");
 			props.load(propsFile);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (FileNotFoundException e) {				
 			e.printStackTrace();
 			return;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 			return;
 		}
