@@ -62,7 +62,7 @@ public class ResponseThread extends Thread {
 			errors.add(e.getMessage());
 			errors.add("Ошибка соединения с cubiscan!");
 			e.printStackTrace();
-		}				
+		} 
 	}
 	
 	
@@ -71,15 +71,21 @@ public class ResponseThread extends Thread {
 	
 		super.run();
 		
+		long time = 0;
+		
 		if (errors.size() == 0) {
-			
+			Date startDate = new Date();
 			cubOutput.write(command);
 			cubOutput.flush();
 			
 			String userInput;
 			
-			try {
+			try {				
 				userInput = cubInput.readLine();				
+				
+				Date endDate = new Date();
+				
+				time = endDate.getTime() - startDate.getTime();
 				
 				cubOutput.close();
 				cubInput.close();
@@ -122,6 +128,7 @@ public class ResponseThread extends Thread {
 		data.put("weight", weight);
 		data.put("dimWeight", dimWeight);
 		data.put("volWeight", volWeight);
+		data.put("requestTime", time);
 		
 		result.put("isError", isError);
 		result.put("errors", errors);
