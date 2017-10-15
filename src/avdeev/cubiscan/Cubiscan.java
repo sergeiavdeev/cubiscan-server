@@ -8,15 +8,18 @@ public class Cubiscan {
 	private ServerSocket socket;
 	private String cubIp;
 	private int cubPort;
+	private int cubTimeout;
 	
 		
-	public Cubiscan(int serverPort, String cubIp, int cubPort) {
+	public Cubiscan(int serverPort, String cubIp, int cubPort, int cubTimeout) {
 				
-		this.cubIp = cubIp;
-		this.cubPort = cubPort;		
+		this.cubIp      = cubIp;
+		this.cubPort    = cubPort;
+		this.cubTimeout = cubTimeout;
 				
 		try {
 			socket = new ServerSocket(serverPort);
+			System.out.println("Server start on port " + serverPort);
 		} catch (IOException e) {			
 			e.printStackTrace();			
 			System.exit(-1);			
@@ -25,17 +28,15 @@ public class Cubiscan {
 	
 	
 	public void start() {
-		
-		System.out.print("Server start!");
-		
+						
 		Socket client;
 		
 		while(true) {
 			
 			try {				
 				client = socket.accept();
-				
-				ResponseThread req = new ResponseThread(client, cubIp, cubPort);
+				System.out.println("Request accepted...");
+				ResponseThread req = new ResponseThread(client, cubIp, cubPort, cubTimeout);
 				req.start();												
 				
 			} catch (IOException e) {				

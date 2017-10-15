@@ -24,9 +24,11 @@ public class Proc {
 		
 		int port = Integer.parseInt(props.getProperty("cubiscan.port"));
 		String ip = props.getProperty("cubiscan.ip");
+		int timeout = Integer.parseInt(props.getProperty("cubiscan.timeout"));
 		int serverPort = Integer.parseInt(props.getProperty("server.port"));
-				
-		Cubiscan cubiscan = new Cubiscan(serverPort, ip, port);		
+		
+		
+		Cubiscan cubiscan = new Cubiscan(serverPort, ip, port, timeout);		
 		cubiscan.start();
 	}
 }

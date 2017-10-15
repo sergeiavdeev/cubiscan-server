@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +37,7 @@ public class ResponseThread extends Thread {
 	private char [] command;
 	private List<String> errors;
 	
-	public ResponseThread(Socket s, String cubIp, int cubPort) {
+	public ResponseThread(Socket s, String cubIp, int cubPort, int cubTimeout) {
 		
 		client = s;
 		
@@ -51,18 +53,24 @@ public class ResponseThread extends Thread {
 		
 		command = new char [] {0x02, 0x4D, 0x03, 0x0D, 0x0A};
 		
-		try {			
+		try {
+			
 			input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8)), true);
-			cubSocket = new Socket(cubIp, cubPort);
+			output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8)), true);			
+			cubSocket = new Socket();
+			cubSocket.connect(new InetSocketAddress(cubIp, cubPort), cubTimeout);
 			cubOutput = new PrintWriter(cubSocket.getOutputStream(), true);
 			cubInput = new BufferedReader(new InputStreamReader(cubSocket.getInputStream()));
+		} catch (SocketTimeoutException e) {
+			
+			errors.add("Ошибка соединения с cubiscan!");
+			errors.add("EM: " + e.getMessage());			
 		} catch (IOException e) {
 			
 			errors.add(e.getMessage());
 			errors.add("Ошибка соединения с cubiscan!");
 			e.printStackTrace();
-		} 
+		}
 	}
 	
 	
