@@ -64,12 +64,14 @@ public class ResponseThread extends Thread {
 			String req = input.readLine();
 	        System.out.println(req);
 	        
-	        if (req.contains("GET")) {
-	            	isGet = true;	        
-	        }
-	            
-	        if (req.contains("favicon.ico")) {
-	          	isGet = false;
+	        if(req != null) { 
+		        if (req.contains("GET")) {
+		            	isGet = true;	        
+		        }
+		            
+		        if (req.contains("favicon.ico")) {
+		          	isGet = false;
+		        }
 	        }
 	        					
 			output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8)), true);
