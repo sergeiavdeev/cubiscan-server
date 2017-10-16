@@ -37,6 +37,8 @@ public class ResponseThread extends Thread {
 	private char [] command;
 	private List<String> errors;
 	
+	private boolean isGet;
+	
 	public ResponseThread(Socket s, String cubIp, int cubPort, int cubTimeout) {
 		
 		client = s;
@@ -49,6 +51,8 @@ public class ResponseThread extends Thread {
 		dimWeight = 0;
 		volWeight = 0;
 		
+		isGet = false;
+		
 		errors = new ArrayList<String>();
 		
 		command = new char [] {0x02, 0x4D, 0x03, 0x0D, 0x0A};
@@ -56,7 +60,20 @@ public class ResponseThread extends Thread {
 		try {
 			
 			input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8)), true);			
+									
+			String req = input.readLine();
+	        System.out.println(req);
+	        
+	        if (req.contains("GET")) {
+	            	isGet = true;	        
+	        }
+	            
+	        if (req.contains("favicon.ico")) {
+	          	isGet = false;
+	        }
+	        					
+			output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8)), true);
+			
 			cubSocket = new Socket();
 			cubSocket.connect(new InetSocketAddress(cubIp, cubPort), cubTimeout);
 			cubOutput = new PrintWriter(cubSocket.getOutputStream(), true);
@@ -69,8 +86,8 @@ public class ResponseThread extends Thread {
 			
 			errors.add(e.getMessage());
 			errors.add("Ошибка соединения с cubiscan!");
-			e.printStackTrace();
-		}
+			e.printStackTrace(); 
+		}		
 	}
 	
 	
@@ -78,6 +95,10 @@ public class ResponseThread extends Thread {
 	public void run() {
 	
 		super.run();
+		
+		if (!isGet) {
+			errors.add("Wrong request params!");
+		}
 		
 		long time = 0;
 		
@@ -144,7 +165,11 @@ public class ResponseThread extends Thread {
 		
 		String response = result.toString();
 		
-		output.println("HTTP/1.1 200 OK");
+		if (!isGet) {
+			output.println("HTTP/1.1 404 Not Found");
+		} else {
+			output.println("HTTP/1.1 200 OK");
+		}
 		output.println("Server: Cubiscan Server 1.0");
 		output.println("Content-Type: application/json; charset=utf-8");
 		output.println("Date: " + new Date().toString());

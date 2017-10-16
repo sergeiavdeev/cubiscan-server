@@ -35,7 +35,7 @@ public class Cubiscan {
 			
 			try {				
 				client = socket.accept();
-				System.out.println("Request accepted...");
+				System.out.println("Request accepted...");				
 				ResponseThread req = new ResponseThread(client, cubIp, cubPort, cubTimeout);
 				req.start();												
 				
