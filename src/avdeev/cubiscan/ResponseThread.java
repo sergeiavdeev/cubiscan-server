@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -84,11 +85,14 @@ public class ResponseThread extends Thread {
 			
 			errors.add("Ошибка соединения с cubiscan!");
 			errors.add("EM: " + e.getMessage());			
-		} catch (IOException e) {
+		} catch (ConnectException e) {
 			
-			errors.add(e.getMessage());
 			errors.add("Ошибка соединения с cubiscan!");
-			e.printStackTrace(); 
+			errors.add(e.getMessage());			
+		} catch (IOException e) {
+						
+			errors.add("Ошибка соединения с cubiscan!");
+			errors.add(e.getMessage()); 
 		}		
 	}
 	
